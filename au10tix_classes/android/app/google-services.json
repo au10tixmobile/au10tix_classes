@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "729881902280",
+    "project_id": "au10tix-classes",
+    "storage_bucket": "au10tix-classes.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:729881902280:android:a5360442da5ed687e779fd",
+        "android_client_info": {
+          "package_name": "com.au10tix.au10tix_classes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "729881902280-8aup112cdllq9v7s3jrule1ej8le860e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDnQHYkcgv5E9x6EN9rTTJKLR0b0H9fry0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "729881902280-8aup112cdllq9v7s3jrule1ej8le860e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
