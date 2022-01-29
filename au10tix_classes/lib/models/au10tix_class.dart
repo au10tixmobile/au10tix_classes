@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Au10tixClass {
   final String id;
   final String name;
@@ -5,6 +7,7 @@ class Au10tixClass {
   final String imageUrl;
   final String instructorName;
   final String description;
+  final DocumentReference? nextEventRef;
 
   Au10tixClass({
     required this.id,
@@ -13,5 +16,6 @@ class Au10tixClass {
     required this.imageUrl,
     required this.instructorName,
     required this.description,
+    this.nextEventRef,
   });
 }

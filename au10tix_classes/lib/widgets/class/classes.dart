@@ -1,7 +1,7 @@
-import 'package:au10tix_classes/models/au10tix_class.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../class/class_item.dart';
+import '/models/au10tix_class.dart';
 
 class Classes extends StatelessWidget {
   @override
@@ -28,6 +28,9 @@ class Classes extends StatelessWidget {
               imageUrl: classesDoc[i]['imageUrl'],
               instructorName: classesDoc[i]['instructorName'],
               description: classesDoc[i]['description'],
+              nextEventRef: classesDoc[i].data().containsKey('nextEvent')
+                  ? classesDoc[i]['nextEvent']
+                  : null,
             ),
           ),
           itemCount: classesDoc.length,

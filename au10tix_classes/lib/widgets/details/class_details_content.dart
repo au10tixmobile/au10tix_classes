@@ -30,11 +30,9 @@ class ClassDetailsContent extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          Text(
-            'Next class: ${DateFormat('EEEE').format(DateTime.now())}',
-            style: const TextStyle(
-              fontSize: 16,
-            ),
+          const Text(
+            'Next class:',
+            style: TextStyle(fontSize: 16),
           ),
           const SizedBox(height: 5),
           NextClassPanel(
@@ -42,6 +40,7 @@ class ClassDetailsContent extends StatelessWidget {
             partcipantCount: 7,
             maxParticipants: au10tixClass.attendenceMax,
             enrollStatus: true,
+            au10tixClass: au10tixClass,
           ),
           const SizedBox(height: 20),
           SizedBox(

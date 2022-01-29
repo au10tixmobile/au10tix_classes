@@ -46,7 +46,7 @@ class _AuthFormState extends State<AuthForm> {
         margin: const EdgeInsets.all(20),
         child: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Form(
               key: _formKey,
               child: Column(
@@ -75,7 +75,7 @@ class _AuthFormState extends State<AuthForm> {
                   ),
                   if (!_isLogin)
                     TextFormField(
-                      key: ValueKey('username'),
+                      key: const ValueKey('username'),
                       autocorrect: true,
                       textCapitalization: TextCapitalization.words,
                       enableSuggestions: false,
@@ -85,13 +85,13 @@ class _AuthFormState extends State<AuthForm> {
                         }
                         return null;
                       },
-                      decoration: InputDecoration(labelText: 'Username'),
+                      decoration: const InputDecoration(labelText: 'Username'),
                       onSaved: (newValue) {
                         _userName = newValue!;
                       },
                     ),
                   TextFormField(
-                    key: ValueKey('password'),
+                    key: const ValueKey('password'),
                     validator: (value) {
                       if (value!.isEmpty || value.length < 7) {
                         return 'Password must be at least 7 charecters long';
@@ -99,27 +99,29 @@ class _AuthFormState extends State<AuthForm> {
                       return null;
                     },
                     obscureText: true,
-                    decoration: InputDecoration(labelText: 'Password'),
+                    decoration: const InputDecoration(labelText: 'Password'),
                     onSaved: (newValue) {
                       _userPassword = newValue!;
                     },
                   ),
-                  SizedBox(height: 12),
-                  if (widget.isLoading) CircularProgressIndicator(),
+                  const SizedBox(height: 12),
+                  if (widget.isLoading) const CircularProgressIndicator(),
                   if (!widget.isLoading)
-                    RaisedButton(
+                    ElevatedButton(
                       onPressed: _trySubmit,
                       child: Text(_isLogin ? 'Login' : 'Signup'),
                     ),
                   if (!widget.isLoading)
-                    FlatButton(
+                    ElevatedButton(
                       onPressed: () => setState(() {
                         _isLogin = !_isLogin;
                       }),
-                      child: Text(_isLogin
-                          ? 'Create new account'
-                          : 'I already have an account'),
-                      textColor: Theme.of(context).primaryColor,
+                      child: Text(
+                        _isLogin
+                            ? 'Create new account'
+                            : 'I already have an account',
+                        style: TextStyle(color: Theme.of(context).primaryColor),
+                      ),
                     ),
                 ],
               ),
