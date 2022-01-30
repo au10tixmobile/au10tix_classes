@@ -6,7 +6,7 @@ class NewClassEvent extends StatefulWidget {
   final Function addTx;
 
   // ignore: use_key_in_widget_constructors
-  NewClassEvent(this.addTx);
+  const NewClassEvent(this.addTx);
 
   @override
   State<NewClassEvent> createState() {
@@ -24,7 +24,7 @@ class _NewClassEventState extends State<NewClassEvent> {
             context: context,
             initialDate: DateTime.now(),
             firstDate: DateTime(2019),
-            lastDate: DateTime.now())
+            lastDate: DateTime(2030))
         .then((pickedDate) => {
               if (pickedDate != null)
                 {
@@ -37,7 +37,6 @@ class _NewClassEventState extends State<NewClassEvent> {
 
   void _submitData() {
     widget.addTx(_selectedDate);
-    //closes the bottom drawer
     Navigator.of(context).pop();
   }
 

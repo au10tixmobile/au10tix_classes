@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
+import 'package:provider/provider.dart';
+import '/providers/auth_user.dart';
 import '/models/au10tix_class.dart';
 import '/models/next_event.dart';
 
@@ -31,17 +33,32 @@ class _NextClassPanelState extends State<NextClassPanel> {
 
   NextEvent? _nextEvent;
   var _isLoading = true;
+  AuthUser? _user;
+
+  void _enrollToEvent() async {
+    _nextEvent!.participants.add(_user!.userRef!);
+    await FirebaseFirestore.instance
+        .collection('events')
+        .doc(widget.au10tixClass!.nextEventRef!.path.substring(7))
+        .update({
+      'participants': _nextEvent!.participants,
+    });
+  }
 
   @override
   void didChangeDependencies() async {
+    _user = Provider.of<AuthUser>(context, listen: false);
     try {
       var a = await FirebaseFirestore.instance
           .collection('events')
           .doc(widget.au10tixClass!.nextEventRef!.path.substring(7))
           .get();
-      var date = DateTime.parse(a.data()!['date'].toDate().toString());
 
-      _nextEvent = NextEvent(date);
+      final DateTime date =
+          DateTime.parse(a.data()!['date'].toDate().toString());
+      final List<DocumentReference> participants =
+          List.from(a.data()!['participants']);
+      _nextEvent = NextEvent(date, participants);
     } catch (e) {
       print('aaaaaa');
     }
@@ -76,7 +93,7 @@ class _NextClassPanelState extends State<NextClassPanel> {
                       const Spacer(),
                       Chip(
                         label: Text(
-                          'Enrolled ${widget.partcipantCount}/${widget.maxParticipants}',
+                          'Enrolled ${_nextEvent!.participants.length}/${widget.maxParticipants}',
                           style: TextStyle(
                             color: Theme.of(context)
                                 .primaryTextTheme
@@ -87,7 +104,7 @@ class _NextClassPanelState extends State<NextClassPanel> {
                         backgroundColor: Theme.of(context).primaryColor,
                       ),
                       TextButton(
-                          onPressed: getEnrollStatus() ? () {} : null,
+                          onPressed: getEnrollStatus() ? _enrollToEvent : null,
                           child: const Text('Enroll')),
                     ],
                   ),

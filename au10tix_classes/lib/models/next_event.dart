@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class NextEvent {
   DateTime? date;
-  int participants = 0;
+  List<DocumentReference> participants = [];
 
-  NextEvent(this.date);
+  NextEvent(this.date, this.participants);
 }

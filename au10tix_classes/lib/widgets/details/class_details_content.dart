@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '../../models/au10tix_class.dart';
 import 'next_class_panel.dart';
 
