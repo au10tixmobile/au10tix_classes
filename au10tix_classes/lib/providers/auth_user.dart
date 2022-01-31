@@ -6,7 +6,7 @@ class AuthUser with ChangeNotifier {
   bool _isAdmin = false;
   DocumentReference? _userRef;
 
-  void fetchUser(String userId) async {
+  Future<void> fetchUser(String userId) async {
     var a =
         await FirebaseFirestore.instance.collection('users').doc(userId).get();
     _isAdmin = a.data()!['isAdmin'];

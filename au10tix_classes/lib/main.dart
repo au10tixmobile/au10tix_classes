@@ -41,9 +41,13 @@ class MyApp extends StatelessWidget {
             return SplashScreen();
           }
           if (userSnapshot.hasData) {
-            Provider.of<AuthUser>(context, listen: false)
-                .fetchUser(FirebaseAuth.instance.currentUser!.uid);
-            return ClassesScreen();
+            return FutureBuilder(
+                future: Provider.of<AuthUser>(context, listen: false)
+                    .fetchUser(FirebaseAuth.instance.currentUser!.uid),
+                builder: (context, userFetchSnapshot) =>
+                    userFetchSnapshot.connectionState == ConnectionState.waiting
+                        ? SplashScreen()
+                        : ClassesScreen());
           }
           return const AuthScreen();
         },

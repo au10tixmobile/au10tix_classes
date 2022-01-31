@@ -56,9 +56,8 @@ class ClassDetailsScreen extends StatelessWidget {
             delegate: SliverChildListDelegate(
               [
                 ClassDetailsContent(_au10tixClass),
-                const SizedBox(
-                    height:
-                        700), //placeholder to fill the page and make it scrollable
+                //placeholder to fill the page and make it scrollable
+                const SizedBox(height: 700),
               ],
             ),
           ),

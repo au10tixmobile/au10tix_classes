@@ -4,7 +4,8 @@ import 'next_class_panel.dart';
 
 class ClassDetailsContent extends StatelessWidget {
   final Au10tixClass au10tixClass;
-  ClassDetailsContent(this.au10tixClass);
+  // ignore: use_key_in_widget_constructors
+  const ClassDetailsContent(this.au10tixClass);
 
   @override
   Widget build(BuildContext context) {
@@ -29,18 +30,7 @@ class ClassDetailsContent extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          const Text(
-            'Next class:',
-            style: TextStyle(fontSize: 16),
-          ),
-          const SizedBox(height: 5),
-          NextClassPanel(
-            date: DateTime.now(),
-            partcipantCount: 7,
-            maxParticipants: au10tixClass.attendenceMax,
-            enrollStatus: true,
-            au10tixClass: au10tixClass,
-          ),
+          NextClassPanel(au10tixClass),
           const SizedBox(height: 20),
           SizedBox(
             width: double.infinity,
@@ -48,14 +38,6 @@ class ClassDetailsContent extends StatelessWidget {
               au10tixClass.description,
               textAlign: TextAlign.center,
               softWrap: true,
-            ),
-          ),
-          const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {},
-              child: const Text('Join Class'),
             ),
           ),
         ],
