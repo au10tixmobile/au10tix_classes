@@ -7,6 +7,7 @@ import '../models/au10tix_class.dart';
 import '../widgets/details/class_details_content.dart';
 import '../providers/auth_user.dart';
 import '../models/next_event.dart';
+import '../widgets/chat/messages.dart';
 
 class ClassDetailsScreen extends StatefulWidget {
   static const routeName = '/class_details';
@@ -93,6 +94,10 @@ class _ClassDetailsScreenState extends State<ClassDetailsScreen> {
             delegate: SliverChildListDelegate(
               [
                 ClassDetailsContent(_au10tixClass),
+                Text('--------- Updates -------'),
+                Expanded(
+                  child: Messages(),
+                ),
                 //placeholder to fill the page and make it scrollable
                 const SizedBox(height: 700),
               ],

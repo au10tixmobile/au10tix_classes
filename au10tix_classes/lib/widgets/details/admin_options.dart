@@ -1,3 +1,4 @@
+import 'package:au10tix_classes/widgets/chat/new_message.dart';
 import 'package:flutter/material.dart';
 
 class AdminOptions extends StatelessWidget {
@@ -28,10 +29,7 @@ class AdminOptions extends StatelessWidget {
               child: const Text("Open next class"),
             ),
             const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {},
-              child: const Text("Send update"),
-            ),
+            NewMessage(),
           ],
         ),
       ),

@@ -2,7 +2,8 @@
 
 import 'package:flutter/material.dart';
 import '../../models/au10tix_class.dart';
-import 'next_class_panel.dart';
+import './next_class_panel.dart';
+import '../chat/messages.dart';
 
 class ClassDetailsContent extends StatelessWidget {
   final Au10tixClass au10tixClass;
