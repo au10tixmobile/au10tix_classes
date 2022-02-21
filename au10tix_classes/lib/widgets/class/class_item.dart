@@ -28,7 +28,8 @@ class ClassItem extends StatelessWidget {
     final DateTime date = DateTime.parse(a.data()!['date'].toDate().toString());
     final List<DocumentReference> participants =
         List.from(a.data()!['participants']);
-    return NextEvent(date, participants, []);
+    return NextEvent(
+        date: date, participants: participants, waitingParticipants: []);
   }
 
   @override

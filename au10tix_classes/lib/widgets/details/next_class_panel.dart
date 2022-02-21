@@ -1,13 +1,13 @@
-import '/widgets/details/next_class_status.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-
 import 'package:provider/provider.dart';
+
 import '/providers/auth_user.dart';
 import '/models/au10tix_class.dart';
 import '/models/next_event.dart';
+import '/widgets/details/next_class_status.dart';
 
 class NextClassPanel extends StatefulWidget {
   final Au10tixClass? au10tixClass;
@@ -60,8 +60,6 @@ class _NextClassPanelState extends State<NextClassPanel> {
 
   void _handleWaitingList(bool join) async {
     if (join) {
-      print(widget.au10tixClass!.nextEventRef!.path);
-
       _nextEvent!.waitingParticipants.add(_user!.userRef!);
       fbm.subscribeToTopic(
           widget.au10tixClass!.nextEventRef!.path.substring(7));
@@ -128,7 +126,10 @@ class _NextClassPanelState extends State<NextClassPanel> {
     if (a.data()!.containsKey('waitingParticipants')) {
       waitingParticipants = List.from(a.data()!['waitingParticipants']);
     }
-    _nextEvent = NextEvent(date, participants, waitingParticipants);
+    _nextEvent = NextEvent(
+        date: date,
+        participants: participants,
+        waitingParticipants: waitingParticipants);
   }
 
   final fbm = FirebaseMessaging.instance;
@@ -175,13 +176,13 @@ class _NextClassPanelState extends State<NextClassPanel> {
                             child: CircularProgressIndicator(),
                           )
                         : Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               Text(
-                                '${DateFormat('EEEE').format(DateTime.now())} ${DateFormat('dd/MM/yy').format(_nextEvent!.date!)}',
+                                DateFormat('dd/MM/yy')
+                                    .format(_nextEvent!.date!),
                                 style: const TextStyle(fontSize: 16),
                               ),
-                              const Spacer(),
                               Chip(
                                 label: Text(
                                   'Enrolled ${_nextEvent!.participants.length}/${widget.au10tixClass!.attendenceMax}',

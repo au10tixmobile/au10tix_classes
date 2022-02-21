@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class Au10tixClass {
   final String id;
@@ -7,7 +8,8 @@ class Au10tixClass {
   final String imageUrl;
   final String instructorName;
   final String description;
-  final DocumentReference? nextEventRef;
+  final DateTime date;
+  DocumentReference? nextEventRef;
 
   Au10tixClass({
     required this.id,
@@ -16,6 +18,10 @@ class Au10tixClass {
     required this.imageUrl,
     required this.instructorName,
     required this.description,
+    required this.date,
     this.nextEventRef,
   });
+
+  String getOccurance() =>
+      "${DateFormat('EEEE').format(date)} ${DateFormat('Hm').format(date)}";
 }

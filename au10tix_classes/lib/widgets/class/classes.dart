@@ -28,6 +28,8 @@ class Classes extends StatelessWidget {
               imageUrl: classesDoc[i]['imageUrl'],
               instructorName: classesDoc[i]['instructorName'],
               description: classesDoc[i]['description'],
+              date: DateTime.parse(
+                  classesDoc[i]['firstClass'].toDate().toString()),
               nextEventRef: classesDoc[i].data().containsKey('nextEvent')
                   ? classesDoc[i]['nextEvent']
                   : null,

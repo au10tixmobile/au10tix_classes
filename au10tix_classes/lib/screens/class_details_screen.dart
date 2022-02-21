@@ -1,3 +1,4 @@
+import 'package:au10tix_classes/widgets/details/admin_options.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -5,29 +6,65 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/au10tix_class.dart';
 import '../widgets/details/class_details_content.dart';
 import '../providers/auth_user.dart';
-import '../widgets/details/new_class_event.dart';
+import '../models/next_event.dart';
 
-class ClassDetailsScreen extends StatelessWidget {
+class ClassDetailsScreen extends StatefulWidget {
   static const routeName = '/class_details';
 
+  @override
+  State<ClassDetailsScreen> createState() => _ClassDetailsScreenState();
+}
+
+class _ClassDetailsScreenState extends State<ClassDetailsScreen> {
   late Au10tixClass _au10tixClass;
 
-  void _addNewEvent(DateTime chosenDate) async {
-    await FirebaseFirestore.instance
-        .collection('events')
-        .add({'date': chosenDate}).then((value) {
+  @override
+  void didChangeDependencies() {
+    _au10tixClass = ModalRoute.of(context)!.settings.arguments as Au10tixClass;
+    super.didChangeDependencies();
+  }
+
+  void _addNewEvent(bool isCancel) async {
+    final event = await FirebaseFirestore.instance
+        .collection("events")
+        .doc(_au10tixClass.nextEventRef!.path.substring(7))
+        .get()
+        .then((value) => _updateNextEvent(value));
+
+    FirebaseFirestore.instance
+        .collection("events")
+        .doc(_au10tixClass.nextEventRef!.path.substring(7))
+        .update({'status': isCancel ? 'Cancelled' : 'Done'});
+
+    await FirebaseFirestore.instance.collection("events").add({
+      'date': event.date!.add(const Duration(days: 7)),
+      'status': 'Active',
+    }).then((value) {
       FirebaseFirestore.instance
-          .collection('classes')
+          .collection("classes")
           .doc(_au10tixClass.id)
-          .update({'nextEvent': value});
+          .update({'nextEvent': value}).then((value) {
+        FirebaseFirestore.instance
+            .collection("classes")
+            .doc(_au10tixClass.id)
+            .get()
+            .then((value) {
+          setState(() {
+            _au10tixClass.nextEventRef = value['nextEvent'];
+          });
+        });
+      });
     });
+  }
+
+  NextEvent _updateNextEvent(DocumentSnapshot a) {
+    final DateTime date = DateTime.parse(a.data()!['date'].toDate().toString());
+    return NextEvent(date: date, participants: [], waitingParticipants: []);
   }
 
   @override
   Widget build(BuildContext context) {
-    _au10tixClass = ModalRoute.of(context)!.settings.arguments as Au10tixClass;
     final bool isAdmin = Provider.of<AuthUser>(context, listen: false).isAdmin;
-
     return Scaffold(
       body: CustomScrollView(
         slivers: <Widget>[
@@ -74,9 +111,10 @@ class ClassDetailsScreen extends StatelessWidget {
 
   void _startAddNewEvent(BuildContext ctx) {
     showModalBottomSheet(
-        context: ctx,
-        builder: (bCtx) {
-          return NewClassEvent(_addNewEvent);
-        });
+      context: ctx,
+      builder: (bCtx) {
+        return Wrap(children: [AdminOptions(_addNewEvent)]);
+      },
+    );
   }
 }
