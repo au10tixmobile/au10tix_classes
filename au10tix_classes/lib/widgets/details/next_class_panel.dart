@@ -162,7 +162,8 @@ class _NextClassPanelState extends State<NextClassPanel> {
             _updateNextEvent(snapshot.data!);
             return Column(
               children: [
-                NextClassStatus(snapshot.hasData, _isNotEnrolled()),
+                NextClassStatus(
+                    snapshot.hasData, _isNotEnrolled(), _isNotWaiting()),
                 const SizedBox(height: 5),
                 Card(
                   color: Colors.orange[50],
@@ -196,7 +197,11 @@ class _NextClassPanelState extends State<NextClassPanel> {
                               TextButton(
                                 onPressed: _enrollToEvent,
                                 child: Text(
-                                  _isNotEnrolled() ? 'Enroll' : 'Leave',
+                                  _isNotEnrolled()
+                                      ? _isNotWaiting()
+                                          ? 'Enroll'
+                                          : 'Drop'
+                                      : 'Leave',
                                 ),
                               ),
                             ],

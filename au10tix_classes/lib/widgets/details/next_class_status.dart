@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class NextClassStatus extends StatelessWidget {
   final bool hasData;
-  final bool isNotEnrolled;
+  final bool isNotEnrolled, isNotWaiting;
 
-  NextClassStatus(this.hasData, this.isNotEnrolled);
+  NextClassStatus(this.hasData, this.isNotEnrolled, this.isNotWaiting);
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,9 @@ class NextClassStatus extends StatelessWidget {
             )
           : isNotEnrolled
               ? Text(
-                  'You are not enrolled',
+                  isNotWaiting
+                      ? 'You are not enrolled'
+                      : 'You are in the waiting list',
                   style: TextStyle(
                       fontSize: 16, color: Theme.of(context).errorColor),
                 )
