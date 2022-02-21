@@ -1,5 +1,6 @@
-import 'package:au10tix_classes/widgets/details/next_class_status.dart';
+import '/widgets/details/next_class_status.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
@@ -59,9 +60,15 @@ class _NextClassPanelState extends State<NextClassPanel> {
 
   void _handleWaitingList(bool join) async {
     if (join) {
+      print(widget.au10tixClass!.nextEventRef!.path);
+
       _nextEvent!.waitingParticipants.add(_user!.userRef!);
+      fbm.subscribeToTopic(
+          widget.au10tixClass!.nextEventRef!.path.substring(7));
     } else {
       _nextEvent!.waitingParticipants.remove(_user!.userRef!);
+      fbm.unsubscribeFromTopic(
+          widget.au10tixClass!.nextEventRef!.path.substring(7));
     }
     await FirebaseFirestore.instance
         .collection('events')
@@ -124,6 +131,19 @@ class _NextClassPanelState extends State<NextClassPanel> {
     _nextEvent = NextEvent(date, participants, waitingParticipants);
   }
 
+  final fbm = FirebaseMessaging.instance;
+
+  @override
+  void initState() {
+    super.initState();
+
+    fbm.requestPermission();
+    FirebaseMessaging.onMessage.listen((message) {
+      print('AAAAAAAAA - ${message.toString()}');
+      return;
+    });
+  }
+
   @override
   void didChangeDependencies() async {
     _user = Provider.of<AuthUser>(context, listen: false);
@@ -140,52 +160,56 @@ class _NextClassPanelState extends State<NextClassPanel> {
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.waiting) {
             _updateNextEvent(snapshot.data!);
-          }
-          return Column(
-            children: [
-              NextClassStatus(snapshot.hasData, _isNotEnrolled()),
-              const SizedBox(height: 5),
-              Card(
-                color: Colors.orange[50],
-                margin: EdgeInsets.zero,
-                child: Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: !snapshot.hasData
-                      ? const Center(
-                          child: CircularProgressIndicator(),
-                        )
-                      : Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              '${DateFormat('EEEE').format(DateTime.now())} ${DateFormat('dd/MM/yy').format(_nextEvent!.date!)}',
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                            const Spacer(),
-                            Chip(
-                              label: Text(
-                                'Enrolled ${_nextEvent!.participants.length}/${widget.au10tixClass!.attendenceMax}',
-                                style: TextStyle(
-                                  color: Theme.of(context)
-                                      .primaryTextTheme
-                                      .headline6
-                                      ?.color,
+            return Column(
+              children: [
+                NextClassStatus(snapshot.hasData, _isNotEnrolled()),
+                const SizedBox(height: 5),
+                Card(
+                  color: Colors.orange[50],
+                  margin: EdgeInsets.zero,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: !snapshot.hasData
+                        ? const Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                '${DateFormat('EEEE').format(DateTime.now())} ${DateFormat('dd/MM/yy').format(_nextEvent!.date!)}',
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                              const Spacer(),
+                              Chip(
+                                label: Text(
+                                  'Enrolled ${_nextEvent!.participants.length}/${widget.au10tixClass!.attendenceMax}',
+                                  style: TextStyle(
+                                    color: Theme.of(context)
+                                        .primaryTextTheme
+                                        .headline6
+                                        ?.color,
+                                  ),
+                                ),
+                                backgroundColor: Theme.of(context).primaryColor,
+                              ),
+                              TextButton(
+                                onPressed: _enrollToEvent,
+                                child: Text(
+                                  _isNotEnrolled() ? 'Enroll' : 'Leave',
                                 ),
                               ),
-                              backgroundColor: Theme.of(context).primaryColor,
-                            ),
-                            TextButton(
-                              onPressed: _enrollToEvent,
-                              child: Text(
-                                _isNotEnrolled() ? 'Enroll' : 'Leave',
-                              ),
-                            ),
-                          ],
-                        ),
+                            ],
+                          ),
+                  ),
                 ),
-              ),
-            ],
-          );
+              ],
+            );
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
         });
   }
 }

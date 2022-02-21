@@ -4,7 +4,7 @@ class NextClassStatus extends StatelessWidget {
   final bool hasData;
   final bool isNotEnrolled;
 
-  NextClassStatus(bool this.hasData, bool this.isNotEnrolled);
+  NextClassStatus(this.hasData, this.isNotEnrolled);
 
   @override
   Widget build(BuildContext context) {

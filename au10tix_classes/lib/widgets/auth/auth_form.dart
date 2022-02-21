@@ -112,7 +112,7 @@ class _AuthFormState extends State<AuthForm> {
                       child: Text(_isLogin ? 'Login' : 'Signup'),
                     ),
                   if (!widget.isLoading)
-                    ElevatedButton(
+                    TextButton(
                       onPressed: () => setState(() {
                         _isLogin = !_isLogin;
                       }),
@@ -120,7 +120,6 @@ class _AuthFormState extends State<AuthForm> {
                         _isLogin
                             ? 'Create new account'
                             : 'I already have an account',
-                        style: TextStyle(color: Theme.of(context).primaryColor),
                       ),
                     ),
                 ],

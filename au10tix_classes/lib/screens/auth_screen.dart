@@ -40,6 +40,7 @@ class _AuthScreenState extends State<AuthScreen> {
             .set({
           'username': username,
           'email': email,
+          'isAdmin': false,
         });
       }
     } on FirebaseAuthException catch (e) {

@@ -29,6 +29,13 @@
             {
               "client_id": "729881902280-8aup112cdllq9v7s3jrule1ej8le860e.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "729881902280-9agd2o3jhfu5hge7d2msu79da7t4jidr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.au10tix.au10tixClasses"
+              }
             }
           ]
         }
