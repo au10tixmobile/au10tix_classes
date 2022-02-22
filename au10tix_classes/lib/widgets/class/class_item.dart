@@ -29,7 +29,11 @@ class ClassItem extends StatelessWidget {
     final List<DocumentReference> participants =
         List.from(a.data()!['participants']);
     return NextEvent(
-        date: date, participants: participants, waitingParticipants: []);
+      date: date,
+      participants: participants,
+      waitingParticipants: [],
+      chatMsgs: [],
+    );
   }
 
   @override

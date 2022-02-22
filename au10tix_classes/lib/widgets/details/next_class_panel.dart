@@ -129,7 +129,8 @@ class _NextClassPanelState extends State<NextClassPanel> {
     _nextEvent = NextEvent(
         date: date,
         participants: participants,
-        waitingParticipants: waitingParticipants);
+        waitingParticipants: waitingParticipants,
+        chatMsgs: []);
   }
 
   final fbm = FirebaseMessaging.instance;

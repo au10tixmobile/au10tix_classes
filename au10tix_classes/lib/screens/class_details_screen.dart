@@ -25,6 +25,19 @@ class _ClassDetailsScreenState extends State<ClassDetailsScreen> {
     super.didChangeDependencies();
   }
 
+  void _addNewChatMsg(DocumentReference ref) async {
+    final event = await FirebaseFirestore.instance
+        .collection("events")
+        .doc(_au10tixClass.nextEventRef!.path.substring(7))
+        .get()
+        .then((value) => _updateNextEvent(value));
+    event.chatMsgs.add(ref);
+    FirebaseFirestore.instance
+        .collection("events")
+        .doc(_au10tixClass.nextEventRef!.path.substring(7))
+        .update({'chatMsgs': event.chatMsgs});
+  }
+
   void _addNewEvent(bool isCancel) async {
     final event = await FirebaseFirestore.instance
         .collection("events")
@@ -60,7 +73,16 @@ class _ClassDetailsScreenState extends State<ClassDetailsScreen> {
 
   NextEvent _updateNextEvent(DocumentSnapshot a) {
     final DateTime date = DateTime.parse(a.data()!['date'].toDate().toString());
-    return NextEvent(date: date, participants: [], waitingParticipants: []);
+    List<DocumentReference> chatMsgs = [];
+    if (a.data()!.containsKey('chatMsgs')) {
+      chatMsgs = List.from(a.data()!['chatMsgs']);
+    }
+    return NextEvent(
+      date: date,
+      participants: [],
+      waitingParticipants: [],
+      chatMsgs: chatMsgs,
+    );
   }
 
   @override
@@ -96,7 +118,7 @@ class _ClassDetailsScreenState extends State<ClassDetailsScreen> {
                 ClassDetailsContent(_au10tixClass),
                 Text('--------- Updates -------'),
                 Expanded(
-                  child: Messages(),
+                  child: Messages(_au10tixClass.nextEventRef!.id),
                 ),
                 //placeholder to fill the page and make it scrollable
                 const SizedBox(height: 700),
@@ -118,7 +140,7 @@ class _ClassDetailsScreenState extends State<ClassDetailsScreen> {
     showModalBottomSheet(
       context: ctx,
       builder: (bCtx) {
-        return Wrap(children: [AdminOptions(_addNewEvent)]);
+        return Wrap(children: [AdminOptions(_addNewEvent, _addNewChatMsg)]);
       },
     );
   }

@@ -1,34 +1,69 @@
+// ignore_for_file: use_key_in_widget_constructors
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import './message_bubble.dart';
 
 class Messages extends StatelessWidget {
+  final String id;
+  const Messages(this.id);
+
+  Future<List<ChatMsgs>> _getData(List<DocumentReference> chats) async {
+    List<ChatMsgs> msgs = [];
+    await Future.forEach(chats, (DocumentReference chat) async {
+      await FirebaseFirestore.instance
+          .collection('chats')
+          .doc(chat.id)
+          .get()
+          .then(
+              (value) => msgs.add(ChatMsgs(value['text'], value['createdAt'])));
+    });
+    return msgs;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: FirebaseFirestore.instance
-          .collection('chats')
-          .orderBy('createdAt')
-          .snapshots(),
-      builder: (ctx, AsyncSnapshot<QuerySnapshot> chatSnapshot) {
+    return StreamBuilder<DocumentSnapshot>(
+      stream:
+          FirebaseFirestore.instance.collection('events').doc(id).snapshots(),
+      builder: (ctx, AsyncSnapshot<DocumentSnapshot> chatSnapshot) {
         if (chatSnapshot.connectionState == ConnectionState.waiting) {
           return const Center(
             child: CircularProgressIndicator(),
           );
         }
-        final chatDoc = chatSnapshot.data!.docs;
-        return ListView.builder(
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          reverse: true,
-          itemBuilder: (ctx, index) => MessageBubble(
-            chatDoc[index]['text'],
-            DateTime.parse(chatDoc[index]['createdAt'].toDate().toString()),
-            key: ValueKey(chatDoc[index].id),
-          ),
-          itemCount: chatDoc.length,
+        final event = chatSnapshot.data!;
+        List<DocumentReference> msgs = [];
+        if (event.data()!.containsKey('chatMsgs')) {
+          msgs = List.from(event.data()!['chatMsgs']);
+        }
+        return FutureBuilder(
+          future: _getData(msgs),
+          builder: (context, AsyncSnapshot<List<ChatMsgs>> snapshot) {
+            if (snapshot.connectionState != ConnectionState.waiting &&
+                snapshot.data!.isNotEmpty) {
+              return ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  reverse: true,
+                  itemBuilder: (ctx, index) => MessageBubble(
+                        snapshot.data![index].msg!,
+                        snapshot.data![index].createdAt!,
+                      ),
+                  itemCount: msgs.length);
+            }
+            return Text('');
+          },
         );
       },
     );
+  }
+}
+
+class ChatMsgs {
+  String? msg;
+  DateTime? createdAt;
+  ChatMsgs(this.msg, dynamic createdAt) {
+    this.createdAt = DateTime.parse(createdAt.toDate().toString());
   }
 }

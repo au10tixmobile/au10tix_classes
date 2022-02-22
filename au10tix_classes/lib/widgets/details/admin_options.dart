@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 
 class AdminOptions extends StatelessWidget {
   final Function addNewEvent;
-  const AdminOptions(this.addNewEvent, {Key? key}) : super(key: key);
+  final Function addNewChatMsg;
+
+  const AdminOptions(this.addNewEvent, this.addNewChatMsg, {Key? key})
+      : super(key: key);
 
   void _openNextClass(BuildContext context, bool isCancel) {
     addNewEvent(isCancel);
@@ -29,7 +32,7 @@ class AdminOptions extends StatelessWidget {
               child: const Text("Open next class"),
             ),
             const SizedBox(height: 10),
-            NewMessage(),
+            NewMessage(addNewChatMsg),
           ],
         ),
       ),
