@@ -1,3 +1,4 @@
+import 'package:au10tix_classes/screens/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -53,7 +54,7 @@ class MyApp extends StatelessWidget {
         },
       ),
       routes: {
-        ClassDetailsScreen.routeName: (ctx) => ClassDetailsScreen(),
+        ProfileThreePage.routeName: (ctx) => ProfileThreePage(),
       },
     );
   }

@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 
 import '/models/au10tix_class.dart';
 import '/models/next_event.dart';
-import '/screens/class_details_screen.dart';
+import '/screens/profile.dart';
 
 class ClassItem extends StatelessWidget {
   final Au10tixClass au10tixClass;
@@ -42,7 +42,7 @@ class ClassItem extends StatelessWidget {
     return GestureDetector(
       onTap: () => Navigator.pushNamed(
         context,
-        ClassDetailsScreen.routeName,
+        ProfileThreePage.routeName,
         arguments: au10tixClass,
       ),
       child: Card(

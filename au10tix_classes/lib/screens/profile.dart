@@ -1,28 +1,72 @@
-import 'package:au10tix_classes/widgets/details/admin_options.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 import '../models/au10tix_class.dart';
-import '../widgets/details/class_details_content.dart';
+import '../widgets/details/class_details_card.dart';
+import '../widgets/details/next_class_details_card.dart';
 import '../providers/auth_user.dart';
+import '../widgets/details/admin_options.dart';
 import '../models/next_event.dart';
-import '../widgets/chat/messages.dart';
 
-class ClassDetailsScreen extends StatefulWidget {
+class ProfileThreePage extends StatefulWidget {
   static const routeName = '/class_details';
 
   @override
-  State<ClassDetailsScreen> createState() => _ClassDetailsScreenState();
+  State<ProfileThreePage> createState() => _ProfileThreePageState();
 }
 
-class _ClassDetailsScreenState extends State<ClassDetailsScreen> {
+class _ProfileThreePageState extends State<ProfileThreePage> {
   late Au10tixClass _au10tixClass;
 
   @override
   void didChangeDependencies() {
     _au10tixClass = ModalRoute.of(context)!.settings.arguments as Au10tixClass;
     super.didChangeDependencies();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isAdmin = Provider.of<AuthUser>(context, listen: false).isAdmin;
+
+    return Scaffold(
+        backgroundColor: Colors.grey.shade300,
+        body: SingleChildScrollView(
+          child: Stack(
+            children: <Widget>[
+              SizedBox(
+                height: 200,
+                width: double.infinity,
+                child: Hero(
+                  tag: _au10tixClass.id,
+                  child: Image.network(
+                    _au10tixClass.imageUrl,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.fromLTRB(16.0, 150.0, 16.0, 16.0),
+                child: Column(
+                  children: <Widget>[
+                    ClassDetilasCard(au10tixClass: _au10tixClass),
+                    const SizedBox(height: 20.0),
+                    const NextClassDetailsCard()
+                  ],
+                ),
+              ),
+              AppBar(
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+              )
+            ],
+          ),
+        ),
+        floatingActionButton: isAdmin
+            ? FloatingActionButton(
+                onPressed: () => _startAddNewEvent(context),
+                child: const Icon(Icons.add),
+              )
+            : null);
   }
 
   void _addNewChatMsg(DocumentReference ref) async {
@@ -82,57 +126,6 @@ class _ClassDetailsScreenState extends State<ClassDetailsScreen> {
       participants: [],
       waitingParticipants: [],
       chatMsgs: chatMsgs,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final bool isAdmin = Provider.of<AuthUser>(context, listen: false).isAdmin;
-    return Scaffold(
-      body: CustomScrollView(
-        slivers: <Widget>[
-          SliverAppBar(
-            expandedHeight: 250,
-            pinned: true,
-            flexibleSpace: FlexibleSpaceBar(
-              title: Container(
-                color: Colors.black54,
-                padding: const EdgeInsets.symmetric(horizontal: 5),
-                child: Text(
-                  _au10tixClass.name,
-                  style: const TextStyle(color: Colors.white),
-                ),
-              ),
-              background: Hero(
-                tag: _au10tixClass.id,
-                child: Image.network(
-                  _au10tixClass.imageUrl,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-          ),
-          SliverList(
-            delegate: SliverChildListDelegate(
-              [
-                ClassDetailsContent(_au10tixClass),
-                Text('--------- Updates -------'),
-                Expanded(
-                  child: Messages(_au10tixClass.nextEventRef!.id),
-                ),
-                //placeholder to fill the page and make it scrollable
-                const SizedBox(height: 700),
-              ],
-            ),
-          ),
-        ],
-      ),
-      floatingActionButton: isAdmin
-          ? FloatingActionButton(
-              onPressed: () => _startAddNewEvent(context),
-              child: const Icon(Icons.add),
-            )
-          : null,
     );
   }
 
