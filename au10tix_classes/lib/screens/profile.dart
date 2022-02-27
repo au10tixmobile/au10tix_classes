@@ -50,7 +50,7 @@ class _ProfileThreePageState extends State<ProfileThreePage> {
                   children: <Widget>[
                     ClassDetilasCard(au10tixClass: _au10tixClass),
                     const SizedBox(height: 20.0),
-                    const NextClassDetailsCard()
+                    NextClassDetailsCard(au10tixClass: _au10tixClass)
                   ],
                 ),
               ),

@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import './message_bubble.dart';
+import 'package:intl/intl.dart';
 
 class Messages extends StatelessWidget {
   final String id;
@@ -46,13 +46,26 @@ class Messages extends StatelessWidget {
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
                   reverse: true,
-                  itemBuilder: (ctx, index) => MessageBubble(
-                        snapshot.data![index].msg!,
-                        snapshot.data![index].createdAt!,
+                  itemBuilder: (ctx, index) => Padding(
+                        padding: const EdgeInsets.only(
+                            left: 16, right: 16, bottom: 10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                                DateFormat('dd/MM/yy HH:mm')
+                                    .format(snapshot.data![index].createdAt!),
+                                style: const TextStyle(color: Colors.grey)),
+                            Text(
+                              snapshot.data![index].msg!,
+                              style: const TextStyle(fontSize: 20),
+                            )
+                          ],
+                        ),
                       ),
                   itemCount: msgs.length);
             }
-            return Text('');
+            return const Text('');
           },
         );
       },
