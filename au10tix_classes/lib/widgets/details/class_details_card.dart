@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '/models/au10tix_class.dart';
 
 class ClassDetilasCard extends StatelessWidget {
-  const ClassDetilasCard({
+  ClassDetilasCard({
     Key? key,
     required Au10tixClass au10tixClass,
   })  : _au10tixClass = au10tixClass,
@@ -57,21 +57,52 @@ class ClassDetilasCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8.0),
-          ExpansionTile(
-            title: const Text(
-              "Class Details",
-              style: TextStyle(color: Colors.black),
-            ),
-            children: <Widget>[
-              Container(
-                alignment: Alignment.topLeft,
-                padding: const EdgeInsets.all(16.0),
-                child: Text(_au10tixClass.description),
-              )
-            ],
-          ),
+          if (_au10tixClass.description.isNotEmpty)
+            ClassInfoSection(_au10tixClass.description)
         ],
       ),
+    );
+  }
+}
+
+class ClassInfoSection extends StatefulWidget {
+  final String description;
+  var _detailsExpanded = false;
+  ClassInfoSection(this.description, {Key? key}) : super(key: key);
+
+  @override
+  _ClassInfoSectionState createState() => _ClassInfoSectionState();
+}
+
+class _ClassInfoSectionState extends State<ClassInfoSection> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        ExpansionTile(
+          title: const Text(
+            "Class Details",
+            style: TextStyle(color: Colors.black),
+          ),
+          subtitle: widget._detailsExpanded
+              ? null
+              : widget.description.length > 20
+                  ? Text('${widget.description.substring(0, 30)}...')
+                  : Text(widget.description),
+          onExpansionChanged: (value) {
+            setState(() {
+              widget._detailsExpanded = value;
+            });
+          },
+          children: <Widget>[
+            Container(
+              alignment: Alignment.topLeft,
+              padding: const EdgeInsets.all(16.0),
+              child: Text(widget.description),
+            )
+          ],
+        ),
+      ],
     );
   }
 }

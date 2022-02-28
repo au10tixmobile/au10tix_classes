@@ -9,10 +9,6 @@ class NextClassStatus extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(children: [
-      const Text(
-        'Next class: ',
-        style: TextStyle(fontSize: 16),
-      ),
       !hasData
           ? const Text(
               'Next class: ',

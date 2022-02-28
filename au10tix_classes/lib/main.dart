@@ -1,4 +1,3 @@
-import 'package:au10tix_classes/screens/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,6 +8,7 @@ import './screens/splash_screen.dart';
 import './screens/classes_screen.dart';
 import './screens/class_details_screen.dart';
 import './providers/auth_user.dart';
+import './config/palette.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Au10tix Classes',
       theme: ThemeData(
-        primarySwatch: Colors.orange,
+        primarySwatch: Palette.kToDark,
       ),
       home: StreamBuilder(
         stream: FirebaseAuth.instance.authStateChanges(),
@@ -54,7 +54,7 @@ class MyApp extends StatelessWidget {
         },
       ),
       routes: {
-        ProfileThreePage.routeName: (ctx) => ProfileThreePage(),
+        ClassDetailsScreen.routeName: (ctx) => ClassDetailsScreen(),
       },
     );
   }

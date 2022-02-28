@@ -1,49 +1,46 @@
-import 'package:au10tix_classes/providers/auth_user.dart';
+// ignore_for_file: must_be_immutable, use_key_in_widget_constructors
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '/models/au10tix_class.dart';
-import '/models/next_event.dart';
-import '/screens/profile.dart';
+import '../../models/au10tix_class.dart';
+import '../../models/next_event.dart';
+import '../../screens/class_details_screen.dart';
+import '../../helpers/next_class_helper.dart';
+import '../../providers/auth_user.dart';
+import '../../widgets/details/next_class_status.dart';
 
-class ClassItem extends StatelessWidget {
+class ClassItem extends StatefulWidget {
   final Au10tixClass au10tixClass;
 
   const ClassItem(this.au10tixClass);
 
-  bool isEnrolled(NextEvent nextEvent, AuthUser user) =>
-      nextEvent.participants.contains(user.userRef!);
+  @override
+  State<ClassItem> createState() => _ClassItemState();
+}
+
+class _ClassItemState extends State<ClassItem> {
+  NextEvent? _nextEvent;
+  AuthUser? _user;
 
   Future<NextEvent> _getData() async {
     return await FirebaseFirestore.instance
         .collection('events')
-        .doc(au10tixClass.nextEventRef!.path.substring(7))
+        .doc(widget.au10tixClass.nextEventRef!.path.substring(7))
         .get()
-        .then((value) => _updateNextEvent(value));
-  }
-
-  NextEvent _updateNextEvent(DocumentSnapshot a) {
-    final DateTime date = DateTime.parse(a.data()!['date'].toDate().toString());
-    final List<DocumentReference> participants =
-        List.from(a.data()!['participants']);
-    return NextEvent(
-      date: date,
-      participants: participants,
-      waitingParticipants: [],
-      chatMsgs: [],
-    );
+        .then((value) => NextClassHelper.updateNextEvent(value));
   }
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<AuthUser>(context, listen: false);
+    _user = Provider.of<AuthUser>(context, listen: false);
     return GestureDetector(
       onTap: () => Navigator.pushNamed(
         context,
-        ProfileThreePage.routeName,
-        arguments: au10tixClass,
+        ClassDetailsScreen.routeName,
+        arguments: widget.au10tixClass,
       ),
       child: Card(
         margin: const EdgeInsets.symmetric(
@@ -57,42 +54,56 @@ class ClassItem extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Hero(
-                  tag: au10tixClass.id,
+                  tag: widget.au10tixClass.id,
                   child: CircleAvatar(
-                    backgroundImage: NetworkImage(au10tixClass.imageUrl),
+                    backgroundImage: NetworkImage(widget.au10tixClass.imageUrl),
                   ),
                 ),
               ],
             ),
-            title: Text(au10tixClass.name),
+            title: Text(widget.au10tixClass.name),
             subtitle: FutureBuilder(
               future: _getData(),
               builder: (context, AsyncSnapshot<NextEvent> snapshot) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 5),
-                    snapshot.data != null
-                        ? Text(
-                            'Next class: ${DateFormat('EEEE').format(DateTime.now())} ${DateFormat('dd/MM/yy').format(snapshot.data!.date!)}',
-                          )
-                        : const Text('Next class: TBD'),
-                    const SizedBox(height: 5),
-                    snapshot.data != null && isEnrolled(snapshot.data!, user)
-                        ? Text(
-                            'You are enrolled in this class',
-                            style: TextStyle(
-                              color: Theme.of(context).primaryColor,
-                            ),
-                          )
-                        : Text(
-                            'You are not enrolled in this class',
-                            style: TextStyle(
-                              color: Theme.of(context).errorColor,
+                if (snapshot.connectionState != ConnectionState.waiting) {
+                  if (snapshot.data != null) {
+                    _nextEvent = snapshot.data;
+                  }
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 5),
+                      snapshot.data != null
+                          ? Text(
+                              'Next class: ${DateFormat('EEEE').format(DateTime.now())} ${DateFormat('dd/MM/yy').format(snapshot.data!.date!)}',
+                            )
+                          : const Text('Next class: TBD'),
+                      const SizedBox(height: 5),
+                      if (snapshot.data != null)
+                        NextClassStatus(
+                            true, _isNotEnrolled(), _isNotWaiting()),
+                      if (snapshot.data != null)
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: () => _enrollToEvent(context),
+                              child: Text(
+                                _isNotEnrolled()
+                                    ? _isNotWaiting()
+                                        ? 'Enroll'
+                                        : 'Drop'
+                                    : 'Leave',
+                              ),
                             ),
                           ),
-                  ],
-                );
+                        ),
+                    ],
+                  );
+                } else {
+                  return const SizedBox();
+                }
               },
             ),
             trailing: Column(
@@ -104,5 +115,29 @@ class ClassItem extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _enrollToEvent(BuildContext context) async {
+    await NextClassHelper.enrollToEvent(
+        context, widget.au10tixClass, _nextEvent!, _user!, _handleWaitingList);
+    setState(() {
+      //no-op
+    });
+  }
+
+  bool _isNotEnrolled() => NextClassHelper.isNotEnrolled(_nextEvent!, _user!);
+
+  bool _isNotWaiting() => NextClassHelper.isNotWaiting(_nextEvent!, _user!);
+
+  void _handleWaitingList(bool join) async {
+    await NextClassHelper.handleWaitingList(
+      join,
+      widget.au10tixClass,
+      _nextEvent!,
+      _user!,
+    );
+    setState(() {
+      //no-op
+    });
   }
 }
