@@ -1,8 +1,6 @@
 // ignore_for_file: must_be_immutable, use_key_in_widget_constructors
 
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/au10tix_class.dart';
@@ -24,14 +22,6 @@ class ClassItem extends StatefulWidget {
 class _ClassItemState extends State<ClassItem> {
   NextEvent? _nextEvent;
   AuthUser? _user;
-
-  Future<NextEvent> _getData() async {
-    return await FirebaseFirestore.instance
-        .collection('events')
-        .doc(widget.au10tixClass.nextEventRef!.path.substring(7))
-        .get()
-        .then((value) => NextClassHelper.updateNextEvent(value));
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,47 +52,46 @@ class _ClassItemState extends State<ClassItem> {
               ],
             ),
             title: Text(widget.au10tixClass.name),
-            subtitle: FutureBuilder(
-              future: _getData(),
+            subtitle: StreamBuilder(
+              stream: NextClassHelper.getNextEvent(widget.au10tixClass),
               builder: (context, AsyncSnapshot<NextEvent> snapshot) {
-                if (snapshot.connectionState != ConnectionState.waiting) {
-                  if (snapshot.data != null) {
-                    _nextEvent = snapshot.data;
-                  }
+                if (snapshot.connectionState != ConnectionState.waiting &&
+                    snapshot.data != null) {
+                  _nextEvent = snapshot.data;
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 5),
-                      snapshot.data != null
-                          ? Text(
-                              'Next class: ${DateFormat('EEEE').format(DateTime.now())} ${DateFormat('dd/MM/yy').format(snapshot.data!.date!)}',
-                            )
-                          : const Text('Next class: TBD'),
+                      Text(
+                        'Next class: ${_nextEvent!.nextDay} ${_nextEvent!.nextDate}',
+                      ),
                       const SizedBox(height: 5),
-                      if (snapshot.data != null)
-                        NextClassStatus(
-                            true, _isNotEnrolled(), _isNotWaiting()),
-                      if (snapshot.data != null)
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: () => _enrollToEvent(context),
-                              child: Text(
-                                _isNotEnrolled()
-                                    ? _isNotWaiting()
-                                        ? 'Enroll'
-                                        : 'Drop'
-                                    : 'Leave',
-                              ),
+                      NextClassStatus(true, _isNotEnrolled(), _isNotWaiting()),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () => NextClassHelper.enrollToEvent(
+                                context,
+                                widget.au10tixClass,
+                                _nextEvent!,
+                                _user!,
+                                _handleWaitingList),
+                            child: Text(
+                              _isNotEnrolled()
+                                  ? _isNotWaiting()
+                                      ? 'Enroll'
+                                      : 'Drop'
+                                  : 'Leave',
                             ),
                           ),
                         ),
+                      ),
                     ],
                   );
                 } else {
-                  return const SizedBox();
+                  return const Text('Next class: TBD');
                 }
               },
             ),
@@ -117,27 +106,16 @@ class _ClassItemState extends State<ClassItem> {
     );
   }
 
-  void _enrollToEvent(BuildContext context) async {
-    await NextClassHelper.enrollToEvent(
-        context, widget.au10tixClass, _nextEvent!, _user!, _handleWaitingList);
-    setState(() {
-      //no-op
-    });
-  }
-
   bool _isNotEnrolled() => NextClassHelper.isNotEnrolled(_nextEvent!, _user!);
 
   bool _isNotWaiting() => NextClassHelper.isNotWaiting(_nextEvent!, _user!);
 
   void _handleWaitingList(bool join) async {
-    await NextClassHelper.handleWaitingList(
+    NextClassHelper.handleWaitingList(
       join,
       widget.au10tixClass,
       _nextEvent!,
       _user!,
     );
-    setState(() {
-      //no-op
-    });
   }
 }

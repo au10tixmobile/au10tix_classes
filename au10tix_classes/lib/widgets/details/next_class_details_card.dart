@@ -1,15 +1,13 @@
 // ignore_for_file: must_be_immutable
-
-import 'package:au10tix_classes/helpers/next_class_helper.dart';
-import 'package:au10tix_classes/models/au10tix_class.dart';
-import 'package:au10tix_classes/models/next_event.dart';
-import 'package:au10tix_classes/providers/auth_user.dart';
-import 'package:au10tix_classes/widgets/chat/messages.dart';
-import 'package:au10tix_classes/widgets/details/next_class_status.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+
+import '../../helpers/next_class_helper.dart';
+import '../../models/au10tix_class.dart';
+import '../../models/next_event.dart';
+import '../../providers/auth_user.dart';
+import '../../widgets/chat/messages.dart';
+import '../../widgets/details/next_class_status.dart';
 
 class NextClassDetailsCard extends StatelessWidget {
   final Au10tixClass? au10tixClass;
@@ -21,19 +19,15 @@ class NextClassDetailsCard extends StatelessWidget {
     this.au10tixClass,
   }) : super(key: key);
 
-  get _eventsStream => FirebaseFirestore.instance
-      .collection('events')
-      .doc(au10tixClass!.nextEventRef!.path.substring(7))
-      .snapshots();
-
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<DocumentSnapshot>(
-        stream: _eventsStream,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.waiting) {
-            _nextEvent = NextClassHelper.updateNextEvent(snapshot.data!);
-            _user = Provider.of<AuthUser>(context, listen: false);
+    _user = Provider.of<AuthUser>(context, listen: false);
+    return StreamBuilder(
+        stream: NextClassHelper.getNextEvent(au10tixClass!),
+        builder: (context, AsyncSnapshot<NextEvent> snapshot) {
+          if (snapshot.connectionState != ConnectionState.waiting &&
+              snapshot.data != null) {
+            _nextEvent = snapshot.data;
 
             var updateCount =
                 _nextEvent?.chatMsgs != null ? _nextEvent?.chatMsgs.length : 0;
@@ -50,8 +44,7 @@ class NextClassDetailsCard extends StatelessWidget {
                   const Divider(),
                   ListTile(
                     title: const Text("Date"),
-                    subtitle:
-                        Text(DateFormat('dd/MM/yy').format(_nextEvent!.date!)),
+                    subtitle: Text(_nextEvent!.nextDate),
                     leading: const Icon(Icons.calendar_view_day),
                   ),
                   ListTile(

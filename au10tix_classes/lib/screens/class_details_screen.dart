@@ -29,7 +29,7 @@ class _ClassDetailsScreenState extends State<ClassDetailsScreen> {
     final bool isAdmin = Provider.of<AuthUser>(context, listen: false).isAdmin;
 
     return Scaffold(
-        backgroundColor: Colors.grey.shade300,
+        backgroundColor: Theme.of(context).primaryColor,
         body: SingleChildScrollView(
           child: Stack(
             children: <Widget>[

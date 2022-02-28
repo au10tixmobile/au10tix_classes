@@ -107,4 +107,12 @@ class NextClassHelper {
       });
     }
   }
+
+  static Stream<NextEvent> getNextEvent(Au10tixClass au10tixClass) async* {
+    yield* FirebaseFirestore.instance
+        .collection('events')
+        .doc(au10tixClass.nextEventRef!.path.substring(7))
+        .snapshots()
+        .asyncMap((event) => NextClassHelper.updateNextEvent(event));
+  }
 }

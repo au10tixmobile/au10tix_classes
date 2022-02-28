@@ -22,6 +22,6 @@ class Au10tixClass {
     this.nextEventRef,
   });
 
-  String getOccurance() =>
+  String get occurance =>
       "${DateFormat('EEEE').format(date)} ${DateFormat('Hm').format(date)}";
 }

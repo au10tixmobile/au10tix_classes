@@ -1,7 +1,9 @@
+// ignore_for_file: use_key_in_widget_constructors
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../class/class_item.dart';
-import '/models/au10tix_class.dart';
+import '../../models/au10tix_class.dart';
 
 class Classes extends StatelessWidget {
   @override

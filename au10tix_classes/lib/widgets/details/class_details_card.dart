@@ -1,8 +1,10 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
-import '/models/au10tix_class.dart';
+import '../../models/au10tix_class.dart';
 
 class ClassDetilasCard extends StatelessWidget {
-  ClassDetilasCard({
+  const ClassDetilasCard({
     Key? key,
     required Au10tixClass au10tixClass,
   })  : _au10tixClass = au10tixClass,
@@ -28,7 +30,7 @@ class ClassDetilasCard extends StatelessWidget {
                 style: Theme.of(context).textTheme.headline6,
               ),
               Text(
-                'Occurs Every ${_au10tixClass.getOccurance()}',
+                'Occurs Every ${_au10tixClass.occurance}',
                 style: Theme.of(context).textTheme.subtitle1,
               ),
             ],

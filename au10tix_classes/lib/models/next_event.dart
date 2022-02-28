@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class NextEvent {
   DateTime? date;
@@ -13,4 +14,11 @@ class NextEvent {
     required this.waitingParticipants,
     required this.chatMsgs,
   });
+  String get nextDate {
+    return DateFormat('dd/MM/yy').format(date!);
+  }
+
+  String get nextDay {
+    return DateFormat('EEEE').format(date!);
+  }
 }

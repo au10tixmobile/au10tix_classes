@@ -38,6 +38,7 @@ class ClassesScreen extends StatelessWidget {
           )
         ],
       ),
+      backgroundColor: Theme.of(context).primaryColor,
       body: Classes(),
     );
   }
