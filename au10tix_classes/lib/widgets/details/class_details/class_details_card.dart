@@ -1,7 +1,12 @@
 // ignore_for_file: must_be_immutable
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../../models/au10tix_class.dart';
+import 'package:provider/provider.dart';
+import '../../../models/au10tix_class.dart';
+import '../../../providers/auth_user.dart';
+import './subscription_switch.dart';
+import './class_info_section.dart';
 
 class ClassDetilasCard extends StatelessWidget {
   const ClassDetilasCard({
@@ -14,6 +19,8 @@ class ClassDetilasCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final DocumentReference? userRef =
+        Provider.of<AuthUser>(context, listen: false).userRef;
     return Container(
       padding: const EdgeInsets.all(16.0),
       margin: const EdgeInsets.only(top: 16.0),
@@ -60,51 +67,20 @@ class ClassDetilasCard extends StatelessWidget {
           ),
           const SizedBox(height: 8.0),
           if (_au10tixClass.description.isNotEmpty)
-            ClassInfoSection(_au10tixClass.description)
+            ClassInfoSection(_au10tixClass.description),
+          const SizedBox(height: 8.0),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              children: [
+                const Text("Remind me to enroll?"),
+                const Spacer(),
+                SubscriptionSwitch(userRef: userRef, classId: _au10tixClass.id),
+              ],
+            ),
+          )
         ],
       ),
-    );
-  }
-}
-
-class ClassInfoSection extends StatefulWidget {
-  final String description;
-  var _detailsExpanded = false;
-  ClassInfoSection(this.description, {Key? key}) : super(key: key);
-
-  @override
-  _ClassInfoSectionState createState() => _ClassInfoSectionState();
-}
-
-class _ClassInfoSectionState extends State<ClassInfoSection> {
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        ExpansionTile(
-          title: const Text(
-            "Class Details",
-            style: TextStyle(color: Colors.black),
-          ),
-          subtitle: widget._detailsExpanded
-              ? null
-              : widget.description.length > 20
-                  ? Text('${widget.description.substring(0, 30)}...')
-                  : Text(widget.description),
-          onExpansionChanged: (value) {
-            setState(() {
-              widget._detailsExpanded = value;
-            });
-          },
-          children: <Widget>[
-            Container(
-              alignment: Alignment.topLeft,
-              padding: const EdgeInsets.all(16.0),
-              child: Text(widget.description),
-            )
-          ],
-        ),
-      ],
     );
   }
 }

@@ -39,7 +39,7 @@ class NextClassDetailsCard extends StatelessWidget {
               child: Column(
                 children: [
                   const ListTile(
-                    title: Text("Next class information"),
+                    title: Text("Next Class Information"),
                   ),
                   const Divider(),
                   ListTile(

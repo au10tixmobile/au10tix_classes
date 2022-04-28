@@ -1,8 +1,10 @@
+// ignore_for_file: use_key_in_widget_constructors
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/au10tix_class.dart';
-import '../widgets/details/class_details_card.dart';
+import '../widgets/details/class_details/class_details_card.dart';
 import '../widgets/details/next_class_details_card.dart';
 import '../providers/auth_user.dart';
 import '../widgets/details/admin_options.dart';
@@ -69,13 +71,17 @@ class _ClassDetailsScreenState extends State<ClassDetailsScreen> {
             : null);
   }
 
-  void _addNewChatMsg(DocumentReference ref) async {
+  void _addNewChatMsg(Map<String, Object> chat) async {
+    chat.putIfAbsent(
+        "eventId", () => _au10tixClass.nextEventRef!.path.substring(7));
+    final chatRef =
+        await FirebaseFirestore.instance.collection('chats').add(chat);
     final event = await FirebaseFirestore.instance
         .collection("events")
         .doc(_au10tixClass.nextEventRef!.path.substring(7))
         .get()
         .then((value) => _updateNextEvent(value));
-    event.chatMsgs.add(ref);
+    event.chatMsgs.add(chatRef);
     FirebaseFirestore.instance
         .collection("events")
         .doc(_au10tixClass.nextEventRef!.path.substring(7))
@@ -131,9 +137,13 @@ class _ClassDetailsScreenState extends State<ClassDetailsScreen> {
 
   void _startAddNewEvent(BuildContext ctx) {
     showModalBottomSheet(
+      isScrollControlled: true,
       context: ctx,
       builder: (bCtx) {
-        return Wrap(children: [AdminOptions(_addNewEvent, _addNewChatMsg)]);
+        return Padding(
+          padding: MediaQuery.of(context).viewInsets,
+          child: Wrap(children: [AdminOptions(_addNewEvent, _addNewChatMsg)]),
+        );
       },
     );
   }

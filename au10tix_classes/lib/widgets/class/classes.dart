@@ -23,19 +23,7 @@ class Classes extends StatelessWidget {
         final classesDoc = snapshot.data!.docs;
         return ListView.builder(
           itemBuilder: (ctx, i) => ClassItem(
-            Au10tixClass(
-              id: classesDoc[i].id,
-              name: classesDoc[i]['name'],
-              attendenceMax: classesDoc[i]['attendenceMax'],
-              imageUrl: classesDoc[i]['imageUrl'],
-              instructorName: classesDoc[i]['instructorName'],
-              description: classesDoc[i]['description'],
-              date: DateTime.parse(
-                  classesDoc[i]['firstClass'].toDate().toString()),
-              nextEventRef: classesDoc[i].data().containsKey('nextEvent')
-                  ? classesDoc[i]['nextEvent']
-                  : null,
-            ),
+            Au10tixClass.parseResult(classesDoc[i].data(), classesDoc[i].id),
           ),
           itemCount: classesDoc.length,
         );
