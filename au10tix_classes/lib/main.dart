@@ -55,6 +55,7 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         ClassDetailsScreen.routeName: (ctx) => ClassDetailsScreen(),
+        ClassesScreen.routeName: (ctx) => ClassesScreen(),
       },
     );
   }

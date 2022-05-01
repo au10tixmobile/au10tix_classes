@@ -24,4 +24,18 @@ class Au10tixClass {
 
   String get occurance =>
       "${DateFormat('EEEE').format(date)} ${DateFormat('Hm').format(date)}";
+
+  static Au10tixClass parseResult(Map<String, dynamic>? classDoc, String id) {
+    return Au10tixClass(
+      id: id,
+      name: classDoc!['name'],
+      attendenceMax: classDoc['attendenceMax'],
+      imageUrl: classDoc['imageUrl'],
+      instructorName: classDoc['instructorName'],
+      description: classDoc['description'],
+      date: DateTime.parse(classDoc['firstClass'].toDate().toString()),
+      nextEventRef:
+          classDoc.containsKey('nextEvent') ? classDoc['nextEvent'] : null,
+    );
+  }
 }

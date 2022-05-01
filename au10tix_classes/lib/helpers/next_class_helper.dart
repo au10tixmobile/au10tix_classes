@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../../models/au10tix_class.dart';
 import '../../models/next_event.dart';
 import '../../providers/auth_user.dart';
-import 'dialog_helper.dart';
+import './dialog_helper.dart';
 
 class NextClassHelper {
   static bool isNotEnrolled(NextEvent nextEvent, AuthUser user) =>
@@ -15,21 +15,27 @@ class NextClassHelper {
       au10tixClass.attendenceMax > nextEvent.participants.length;
   static bool isNotWaiting(NextEvent nextEvent, AuthUser user) =>
       !nextEvent.waitingParticipants.contains(user.userRef!);
+
   static Future<void> handleWaitingList(
-    bool join,
+    bool addToWaiting,
     Au10tixClass au10tixClass,
     NextEvent nextEvent,
     AuthUser user,
   ) async {
     final fbm = FirebaseMessaging.instance;
 
-    if (join) {
+    if (addToWaiting) {
       nextEvent.waitingParticipants.add(user.userRef!);
+      fbm.subscribeToTopic(
+          au10tixClass.nextEventRef!.path.substring(7) + "_waiting");
       fbm.subscribeToTopic(au10tixClass.nextEventRef!.path.substring(7));
     } else {
       nextEvent.waitingParticipants.remove(user.userRef!);
+      fbm.unsubscribeFromTopic(
+          au10tixClass.nextEventRef!.path.substring(7) + "_waiting");
       fbm.unsubscribeFromTopic(au10tixClass.nextEventRef!.path.substring(7));
     }
+
     await FirebaseFirestore.instance
         .collection('events')
         .doc(au10tixClass.nextEventRef!.path.substring(7))
@@ -67,6 +73,7 @@ class NextClassHelper {
     AuthUser user,
     Function handleWaitingList,
   ) async {
+    final fbm = FirebaseMessaging.instance;
     if (!isOpenForEnrollment(au10tixClass, nextEvent) &&
         isNotEnrolled(nextEvent, user)) {
       if (isNotWaiting(nextEvent, user)) {
@@ -86,6 +93,7 @@ class NextClassHelper {
       }
     } else {
       if (isNotEnrolled(nextEvent, user)) {
+        fbm.subscribeToTopic(au10tixClass.nextEventRef!.path.substring(7));
         nextEvent.participants.add(user.userRef!);
         if (!isNotWaiting(nextEvent, user)) {
           nextEvent.waitingParticipants.remove(user.userRef!);
@@ -98,6 +106,7 @@ class NextClassHelper {
         }
       } else {
         nextEvent.participants.remove(user.userRef!);
+        fbm.unsubscribeFromTopic(au10tixClass.nextEventRef!.path.substring(7));
       }
       await FirebaseFirestore.instance
           .collection('events')
