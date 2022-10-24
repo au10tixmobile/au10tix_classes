@@ -34,8 +34,9 @@ class Messages extends StatelessWidget {
         }
         final event = chatSnapshot.data!;
         List<DocumentReference> msgs = [];
-        if (event.data()!.containsKey('chatMsgs')) {
-          msgs = List.from(event.data()!['chatMsgs']);
+        final eventData = event.data() as Map<String, dynamic>;
+        if (eventData.containsKey('chatMsgs')) {
+          msgs = List.from(eventData['chatMsgs']);
         }
         return FutureBuilder(
           future: _getData(msgs),

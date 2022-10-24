@@ -89,16 +89,25 @@ class _ClassDetailsScreenState extends State<ClassDetailsScreen> {
   }
 
   void _addNewEvent(bool isCancel) async {
-    final event = await FirebaseFirestore.instance
-        .collection("events")
-        .doc(_au10tixClass.nextEventRef!.path.substring(7))
-        .get()
-        .then((value) => _updateNextEvent(value));
-
-    FirebaseFirestore.instance
-        .collection("events")
-        .doc(_au10tixClass.nextEventRef!.path.substring(7))
-        .update({'status': isCancel ? 'Cancelled' : 'Done'});
+    final NextEvent event;
+    if (_au10tixClass.nextEventRef != null) {
+      event = await FirebaseFirestore.instance
+          .collection("events")
+          .doc(_au10tixClass.nextEventRef!.path.substring(7))
+          .get()
+          .then((value) => _updateNextEvent(value));
+      FirebaseFirestore.instance
+          .collection("events")
+          .doc(_au10tixClass.nextEventRef!.path.substring(7))
+          .update({'status': isCancel ? 'Cancelled' : 'Done'});
+    } else {
+      event = NextEvent(
+        date: _au10tixClass.date,
+        participants: [],
+        waitingParticipants: [],
+        chatMsgs: [],
+      );
+    }
 
     await FirebaseFirestore.instance.collection("events").add({
       'date': event.date!.add(const Duration(days: 7)),
@@ -122,10 +131,11 @@ class _ClassDetailsScreenState extends State<ClassDetailsScreen> {
   }
 
   NextEvent _updateNextEvent(DocumentSnapshot a) {
-    final DateTime date = DateTime.parse(a.data()!['date'].toDate().toString());
+    final data = a.data() as Map<String, dynamic>;
+    final DateTime date = DateTime.parse(data['date'].toDate().toString());
     List<DocumentReference> chatMsgs = [];
-    if (a.data()!.containsKey('chatMsgs')) {
-      chatMsgs = List.from(a.data()!['chatMsgs']);
+    if (data.containsKey('chatMsgs')) {
+      chatMsgs = List.from(data['chatMsgs']);
     }
     return NextEvent(
       date: date,

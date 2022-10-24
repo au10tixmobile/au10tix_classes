@@ -23,7 +23,8 @@ class Classes extends StatelessWidget {
         final classesDoc = snapshot.data!.docs;
         return ListView.builder(
           itemBuilder: (ctx, i) => ClassItem(
-            Au10tixClass.parseResult(classesDoc[i].data(), classesDoc[i].id),
+            Au10tixClass.parseResult(
+                classesDoc[i].data() as Map<String, dynamic>, classesDoc[i].id),
           ),
           itemCount: classesDoc.length,
         );

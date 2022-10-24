@@ -45,19 +45,20 @@ class NextClassHelper {
   }
 
   static NextEvent updateNextEvent(DocumentSnapshot a) {
-    final DateTime date = DateTime.parse(a.data()!['date'].toDate().toString());
+    final data = a.data() as Map<String, dynamic>;
+    final DateTime date = DateTime.parse(data['date'].toDate().toString());
     List<DocumentReference> participants = [];
 
-    if (a.data()!.containsKey('participants')) {
-      participants = List.from(a.data()!['participants']);
+    if (data.containsKey('participants')) {
+      participants = List.from(data['participants']);
     }
     List<DocumentReference> waitingParticipants = [];
-    if (a.data()!.containsKey('waitingParticipants')) {
-      waitingParticipants = List.from(a.data()!['waitingParticipants']);
+    if (data.containsKey('waitingParticipants')) {
+      waitingParticipants = List.from(data['waitingParticipants']);
     }
     List<DocumentReference> chatMsgs = [];
-    if (a.data()!.containsKey('chatMsgs')) {
-      chatMsgs = List.from(a.data()!['chatMsgs']);
+    if (data.containsKey('chatMsgs')) {
+      chatMsgs = List.from(data['chatMsgs']);
     }
     return NextEvent(
         date: date,

@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.au10tix.au10tix_classes"
     xmlns:tools="http://schemas.android.com/tools">/>
+    <uses-permission android:name="android.permission.INTERNET"/>
    <application
         android:label="au10tix_classes"
         android:name="${applicationName}"
